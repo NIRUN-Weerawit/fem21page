@@ -171,9 +171,10 @@ var data_INVERTERTEMP = [];
 // var HV_STATUS_isON = false;
 // var VCMINFO = "-";
 // var ERROR = "-";
-var timestamps_num = 20; //The amount of timestamps
+var timestamps_num = 15; //The amount of timestamps
 var time_interval = 100; //interval of data reading millisecond
 var MaxVelocity = 200;
+var totalGraph = 4;
 var MaxLV = 30;
 var MaxHV = 600;
 var MaxTorque = 200;
@@ -226,8 +227,10 @@ document.getElementsByClassName('picker')[3].addEventListener('change', function
 function showGraph(element, category){
   if (element.checked){
     document.getElementById(category).style.display = "";
+    timestamps_num = timestamps_num - 10;
   } else{
     document.getElementById(category).style.display = "none";
+    timestamps_num = timestamps_num + 10;
   }
 }
 
@@ -618,9 +621,9 @@ new Vue({
       apexchart: VueApexCharts
   },
   data: {
-      series: [],
-      // series: [{data: data_TORQUE.slice()}],
-      chartOptions: {
+    series: [],
+    // series: [{data: data_TORQUE.slice()}],
+    chartOptions: {
       chart: {
           animations: {
           enabled: false,
@@ -630,7 +633,7 @@ new Vue({
           }
           },
           toolbar: {
-          show: false
+          show: true
           },
           zoom: {
           enabled: false
@@ -655,9 +658,16 @@ new Vue({
           min: 0
       },
       legend: {
-          show: true
+          show: true,
+          labels: {
+            // colors: ['#ff0000', '#00ff00', '#0000ff', '#111111'], // Define colors for each series
+            useSeriesColors: true, // Ensure custom colors are used for legend labels
+            formatter: function(seriesName, opts) {
+              return "<span style='color: " + opts.colors[opts.seriesIndex] + "'>" + seriesName + "</span>";
+            }
+          }
       }
-      }
+    }
   },
   mounted: function() {
       this.intervals();
@@ -970,13 +980,13 @@ var brakeChart = new JSC.chart('brakeChart', brakeOption);
 var batteryOption = brakeOption;
 batteryOption['palette'] = {
   pointValue: '%yValue',
-    ranges: [ 
-        { value: 0, color: '#E6FF00' },
-        { value: 20, color: '#ACFF00'}, 
-        { value: 40, color: '#00FF7D' }, 
-        { value: 60, color:  '#3CFF00' }, 
-        { value: [80,100], color:  '#00FC26'}
-    ] 
+  ranges: [ 
+          { value: 0, color: '#FF5321' },
+          { value: 20, color: '#FF5353'}, 
+          { value: 40, color: '#FFD221' }, 
+          { value: 60, color:  '#77E6B4' }, 
+          { value: [80,100] , color: '#21D683' }
+        ] 
 };
 var batteryChart = new JSC.chart('batteryChart', batteryOption);
 

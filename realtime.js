@@ -46,30 +46,54 @@ function registerOnValueListener(folder_name) {
   console.log("new register!");
   // Register the new onValue listener
   onValue(ref(db, folder_name + "/STATUS"), (snapshot) => {
-    if (snapshot.exists()){
-      console.log("STATUS changed!");
-    }
+    // if (snapshot.exists()){
+    //   console.log("STATUS changed!");
+    // }
     const data = snapshot.val();
     if (data){
       // console.log("SNAPSHOT TOOK");
       const keys = Object.keys(data);
-      console.log("keys: " + keys);
+      // console.log("keys: " + keys);
       keys.forEach((key) => {
         console.log("detect key: " + key);
         
         if (key == "HV_STATUS" || key == "BRAKE_SW"){
           const element = document.getElementById(key);
-          console.log(key + ": " + data[key]);
+          // console.log(key + ": " + data[key]);
           element.textContent = data[key] ? "ON" : "OFF";
         } 
-        // else if (key == "VCMINFO"){
-        //   document.getElementById(key).textContent = data[key];
-        // } else if (key == "ERROR"){
-        //   document.getElementById(key).textContent = data[key];
-        // }
       })
     } else {
-      console.log("No data available at the specified reference.");
+      console.log("No data available at " + folder_name +"/STATUS");
+    }
+  });
+
+  onValue(ref(db, folder_name + "/TEMPS"), (snapshot) => {
+    if (snapshot.exists()){
+      console.log("TEMP changed!");
+    }
+    const data = snapshot.val();
+    if (data){
+      const keys = Object.keys(data);
+      // console.log("keys: " + keys);
+      keys.forEach((key) => {
+        console.log("detect key: " + key);
+        
+        if (key == "BTR_TEMP" || key == "INV_TEMP"){
+          const element = document.getElementById(key);
+          // console.log(key + ": " + data[key]);
+          element.textContent = data[key];
+        } else if (key == "MOTOR_TEMP"){
+          const nums = data[key].split('/').map(Number);
+          // console.log("data = " + data[key]);
+          document.getElementById("wheel_1").textContent = nums[0];
+          document.getElementById("wheel_2").textContent = nums[1];
+          document.getElementById("wheel_3").textContent = nums[2];
+          document.getElementById("wheel_4").textContent = nums[3];
+        }
+      })
+    } else {
+      console.log("No data available at " + folder_name + "/TEMPS");
     }
   });
 }
@@ -143,7 +167,6 @@ document.getElementById("configChoose").addEventListener('click', function(){
 
 var count = 1;
 var folder = "FEM21App data/" + date + "/RUN:" + count;
-var statusFolder = "FEM21App data/" + date + "/RUN:" + count + "/STATUS";
 let stopFlag = 0;
 var data_VELOCITY = [];
 var data_LV = [];
@@ -157,18 +180,13 @@ var data_TORQUE = [[], [], [], []];
 
 var data_ACC = [];
 var data_BRAKE = [];
-var data_BATTERY = [];
+var data_BATTERY_LEVEL = [];
+var data_MOTORTEMP = [[],[],[],[]];
 var data_MOTORTEMP_LF = [];
 var data_MOTORTEMP_RF = [];
 var data_MOTORTEMP_LB = [];
 var data_MOTORTEMP_RB = [];
 var data_INVERTERTEMP = [];
-// var BRAKE_SW_isON = false;
-// var RTD_LF_isON = false;
-// var RTD_RF_isON = false;
-// var RTD_LB_isON = false;
-// var RTD_RB_isON = false;
-// var HV_STATUS_isON = false;
 // var VCMINFO = "-";
 // var ERROR = "-";
 var timestamps_num = 15; //The amount of timestamps
@@ -205,6 +223,7 @@ document.querySelector("#update").addEventListener('click', function(e) {
 
 document.getElementById("RUNchoose").addEventListener('click', function(e){
   count = document.getElementById("RUNnumber").value;
+  date = document.getElementById("date").value;
   document.getElementById("RUN").textContent = count;
   folder = "FEM21App data/" + date + "/RUN:" + count;
   console.log("choose:" + count);
@@ -227,10 +246,10 @@ document.getElementsByClassName('picker')[3].addEventListener('change', function
 function showGraph(element, category){
   if (element.checked){
     document.getElementById(category).style.display = "";
-    timestamps_num = timestamps_num - 10;
+    timestamps_num = timestamps_num - 5;
   } else{
     document.getElementById(category).style.display = "none";
-    timestamps_num = timestamps_num + 10;
+    timestamps_num = timestamps_num + 5;
   }
 }
 
@@ -243,6 +262,7 @@ document.querySelector("#stop").addEventListener('click', function(){
       document.querySelector("#stop").textContent = "STOP";
   }
 });
+
 
 
 function obtainData(category){
@@ -284,42 +304,36 @@ function obtainData(category){
               if (data_HV.length > timestamps_num){
                 data_HV.shift();
               }
-            } else if (category == "TORQUE1") {
+            } else if (category == "TORQUE") {
+              let torques = values[values.length - 1].split('/').map(Number);
+              for (let i=0; i<4; i++){
+                 torques[i] = Math.ceil(torques[i]);
+              }
+             
               data_TORQUE[0].push({
                 x: formattedDate,
-                y: values[values.length - 1]
+                y: torques[0]
               })
-              if (data_TORQUE[0].length > timestamps_num){
-                data_TORQUE[0].shift();
-              }
-
-            } else if (category == "TORQUE2") {
               data_TORQUE[1].push({
                 x: formattedDate,
-                y: values[values.length - 1]
+                y: torques[1]
               })
-              if (data_TORQUE[1].length > timestamps_num){
-                data_TORQUE[1].shift();
-              }
-
-            } else if (category == "TORQUE3") {
               data_TORQUE[2].push({
                 x: formattedDate,
-                y: values[values.length - 1]
+                y: torques[2]
               })
-              if (data_TORQUE[2].length > timestamps_num){
-                data_TORQUE[2].shift();
-              }
-
-            } else if (category == "TORQUE4") {
               data_TORQUE[3].push({
                 x: formattedDate,
-                y: values[values.length - 1]
+                y: torques[3]
               })
-              if (data_TORQUE[3].length > timestamps_num){
+
+              if (data_TORQUE[0].length > timestamps_num){
+                data_TORQUE[0].shift();
+                data_TORQUE[1].shift();
+                data_TORQUE[2].shift();
                 data_TORQUE[3].shift();
               }
-
+            
             } else if (category == "ACC"){
               data_ACC.shift();
               data_ACC.push({
@@ -334,43 +348,57 @@ function obtainData(category){
                 points: [['value', [0, values[values.length - 1]]]] 
               })
 
-            } else if (category == "BATTERY"){
-              data_BATTERY.shift();
-              data_BATTERY.push({
+            } else if (category == "BATTERY_LEVEL"){
+              data_BATTERY_LEVEL.shift();
+              data_BATTERY_LEVEL.push({
                 name: 'Battery', 
                 points: [['value', [0, values[values.length - 1]]]] 
               })
-            } else if (category == "MOTORTEMP_LF"){   //LEFT-FRONT
-              data_MOTORTEMP_LF.shift();
-              data_MOTORTEMP_LF.push({
-                name: 'MOTORTEMP_LF', 
-                points: [['value', [0, values[values.length - 1]]]]  
-              })
-            } else if (category == "MOTORTEMP_RF"){   //RIGHT-FRONT
-              data_MOTORTEMP_RF.shift();
-              data_MOTORTEMP_RF.push({
-                name: 'MOTORTEMP_RF', 
-                points: [['value', [0, values[values.length - 1]]]] 
-              })
-            } else if (category == "MOTORTEMP_LB"){  //LEFT-BACK
-              data_MOTORTEMP_LB.shift();
-              data_MOTORTEMP_LB.push({
-                name: 'MOTORTEMP_LB', 
-                points: [['value', [0, values[values.length - 1]]]] 
-              })
-            } else if (category == "MOTORTEMP_RB"){  //RIGHT-BACK
-              data_MOTORTEMP_RB.shift();
-              data_MOTORTEMP_RB.push({
-                name: 'MOTORTEMP_RB', 
-                points: [['value', [0, values[values.length - 1]]]] 
-              })
-            } else if (category == "INVERTERTEMP"){
-              data_INVERTERTEMP.shift();
-              data_INVERTERTEMP.push({
-                name: 'INVERTERTEMP', 
-                points: [['value', [0, values[values.length - 1]]]] 
-              })
             }
+            // } else if (category == "MOTORTEMP"){   //LEFT-FRONT
+            //   const MOTORTEMP = values[values.length - 1].split('/').map(Number);
+            //   data_MOTORTEMP[0].shift();
+            //   data_MOTORTEMP[1].shift();
+            //   data_MOTORTEMP[2].shift();
+            //   data_MOTORTEMP[3].shift();
+            //   data_MOTORTEMP.push({
+            //     name: 'MOTORTEMP_LF', 
+            //     points: [['value', [0, MOTORTEMP[0]] ]]  
+            //   }, {
+            //     name: 'MOTORTEMP_RF', 
+            //     points: [['value', [0, MOTORTEMP[1]] ]]  
+            //   }, {
+            //     name: 'MOTORTEMP_LB', 
+            //     points: [['value', [0, MOTORTEMP[2]] ]]  
+            //   }, {
+            //     name: 'MOTORTEMP_RB', 
+            //     points: [['value', [0, MOTORTEMP[3]] ]]  
+            //   })
+            // } else if (category == "MOTORTEMP_RF"){   //RIGHT-FRONT
+            //   data_MOTORTEMP_RF.shift();
+            //   data_MOTORTEMP_RF.push({
+            //     name: 'MOTORTEMP_RF', 
+            //     points: [['value', [0, values[values.length - 1]]]] 
+            //   })
+            // } else if (category == "MOTORTEMP_LB"){  //LEFT-BACK
+            //   data_MOTORTEMP_LB.shift();
+            //   data_MOTORTEMP_LB.push({
+            //     name: 'MOTORTEMP_LB', 
+            //     points: [['value', [0, values[values.length - 1]]]] 
+            //   })
+            // } else if (category == "MOTORTEMP_RB"){  //RIGHT-BACK
+            //   data_MOTORTEMP_RB.shift();
+            //   data_MOTORTEMP_RB.push({
+            //     name: 'MOTORTEMP_RB', 
+            //     points: [['value', [0, values[values.length - 1]]]] 
+            //   })
+            // } else if (category == "INVERTERTEMP"){
+            //   data_INVERTERTEMP.shift();
+            //   data_INVERTERTEMP.push({
+            //     name: 'INVERTERTEMP', 
+            //     points: [['value', [0, values[values.length - 1]]]] 
+            //   })
+            // }
 
         } else {
             stopFlag = 1;
@@ -385,6 +413,15 @@ function obtainData(category){
     
 }
 
+//for pedal charts
+window.setInterval(function() {
+  obtainData("ACC");
+  obtainData("BRAKE");
+  obtainData("BATTERY_LEVEL");
+  accChart.options({series: data_ACC});
+  brakeChart.options({series: data_BRAKE});
+  batteryChart.options({series: data_BATTERY_LEVEL});
+}, time_interval);
 
 function getData(category) {
   return get(ref(db, folder + "/" + category))
@@ -459,16 +496,8 @@ new Vue({
       intervals: function() {
           var me = this;
           window.setInterval(function() {
-              
                   obtainData("VELOCITY");
-                  obtainData("ACC");
-                  obtainData("BRAKE");
-                  obtainData("BATTERY");
-                  accChart.options({series: data_ACC});
-                  brakeChart.options({series: data_BRAKE});
-                  batteryChart.options({series: data_BATTERY});
                   me.$refs.realtimeChart.updateSeries([{ data: data_VELOCITY }]);
-              
           }, time_interval);
       }
   }
@@ -676,21 +705,13 @@ new Vue({
       intervals: function() {
           var me = this;
           window.setInterval(function() {
-              
-                  obtainData("TORQUE1");
-                  // console.log("TORQUE1: " + data_TORQUE[0]);
-                  obtainData("TORQUE2");
-                  // console.log("TORQUE2: " + data_TORQUE[1]);
-                  obtainData("TORQUE3");
-                  obtainData("TORQUE4");
-                  // me.series = data_TORQUE1.map(data => ({ data }))
+                  obtainData("TORQUE");
                   me.$refs.realtimeChart.updateSeries([
                     { name: "Left-Front" , data: data_TORQUE[0] },
                     { name: "Right-Front" , data: data_TORQUE[1] },
                     { name: "Left-Back" , data: data_TORQUE[2] },
                     { name: "Right-Back" , data: data_TORQUE[3] }
                   ]);
-              
           }, time_interval);
       }
   }

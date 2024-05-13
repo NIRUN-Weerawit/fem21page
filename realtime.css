@@ -34,18 +34,19 @@ h2 {
 .infoBlock {
     border: 5px solid rgb(89, 236, 79);
     border-radius: 40px;
+
     width: 23%;
-    min-width: fit-content;
+    min-width: min-content;
+    
+    height: 400px;
     min-height: fit-content;
     float: left;
-    height: 400px;
-    margin-left: 2%;
+    margin-left: 1%;
+    padding-top: 22px;
+    padding-bottom: 22px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    padding-top: 22px;
-    padding-bottom: 22px;
-
     .container {
         display: flex;
         /* background: none; */
@@ -131,18 +132,53 @@ h2 {
 }
 
 .statusBlock{
-    border: 1px solid rgb(34, 255, 0);
-    float:inline-start;
-    width: fit-content;
+    /* border: 1px solid rgb(34, 255, 0); */
+    /* float:inline-start; */
+    width: 63%;
     /* margin-left: 70px; */
-    height: 400px;
+    min-height: 450px;
+    height: fit-content;
     /* padding-left: 30px; */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display:flex;
+    flex-direction: row;
+    font-size: larger;
+    font-weight: 500;
+
+    .carTemps{
+        text-align: left;
+        padding-top: 20px;
+        .car{
+            position: relative;
+            /* border: 3px solid rgb(4, 0, 128); */
+            width: 350px;
+            height: 390px;
+        }
+
+    }
 
     .carStatus{
-        text-align: left;
+        border: 5px solid rgb(89, 236, 79);
+        border-radius: 10px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        font-size: larger;
+        .status{
+            margin-top: 20px;
+            margin-left: 30px;
+            /* border: 1px solid orange; */
+            text-align: left;
+            width: max-content;
+        }
+        .message{
+            margin-top: 20px;
+            width: 100%;
+            /* border: 1px solid orange; */
+            text-align: center;
+        }
+        #BRAKE_SW, #HV_STATUS, #ERROR , #VCMINFO {
+            font-weight: 700;
+        }
     }
 }
 
@@ -165,7 +201,7 @@ h2 {
     flex-direction: column;
     align-items: center;
 
-    & .pedalcharts{
+    .pedalcharts{
         display: flex;
         flex-direction: row;
         /* border: 3px dashed red; */
@@ -180,8 +216,6 @@ h2 {
     } 
 }
 
-
-
 .linecharts {
     /* border: 1px solid rgb(230, 0, 255); */
     /* float:inline-start; */
@@ -190,10 +224,11 @@ h2 {
     /* align-items: center; */
     justify-content: center;
     width: 100%;
-}
-.linechart {
+
+    .linechart {
     /* border: 1px solid red; */
     height: fit-content;
+    }
 }
 
 footer {
@@ -213,7 +248,7 @@ footer {
         margin-left: 0px;
         width: 30%;
         height: fit-content;
-        min-width: fit-content;
+        /* min-width: fit-content; */
         max-height: max-content;
         align-items: center;
         padding: 5px;
@@ -286,14 +321,13 @@ footer {
         margin-left: 0px;
         min-height: fit-content;
         padding-left: 0px;
-        .carStatus{
-            text-align: left;
-        }
+
     }
 
     .pedalBlock {
         float:none;
         width: 100%;
+        height: auto;
         .pedalcharts{
             gap: 0px;
         }
@@ -310,8 +344,13 @@ footer {
     .infoBlock {
         border: 3px solid rgb(89, 236, 79);
         margin-left: 0px;
-        width: 95%;
-        height: min-content;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%; 
+        min-width: unset;
+        max-width: 100%;
+        min-height: max-content;
         flex-direction: column;
         /* padding: 10px; */
 
@@ -360,9 +399,64 @@ footer {
         }
     }
 
+    .pedalBlock{
+        float: none;
+        height: max-content;
+       .pedalcharts {
+            flex-direction: column;
+            height: max-content;
+            width: 95%;
+            gap:0;
+            .pedalChart {
+                width: 100%;
+                height: 250px;
+                max-width: none;
+            } 
+       }
+    }
+    
     .statusBlock{
         width: 100%;
+        height: fit-content;
+        flex-direction: column;
+        align-items: center;
+        /* .carTemps{
+            text-align: left;
+            .car{
+                position: relative;
+                border: 3px solid rgb(4, 0, 128);
+                width: 400px;
+                height: 450px;
+            }
+        }
+    
+        .carStatus{
+            border: 1px solid rgb(0, 255, 42);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            font-size: larger;
+            .status{
+                margin-top: 20px;
+                margin-left: 30px;
+                border: 1px solid orange;
+                text-align: left;
+                width: max-content;
+            }
+            .message{
+                margin-top: 20px;
+                width: 100%;
+                border: 1px solid orange;
+                text-align: center;
+            }
+            #BRAKE_SW, #HV_STATUS, #ERROR , #VCMINFO {
+                font-weight: 700;
+            }
+        } */
+
     }
+
+
     .linecharts {
         flex-direction: column;
         align-items: center;

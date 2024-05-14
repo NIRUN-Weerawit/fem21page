@@ -77,7 +77,7 @@ h2 {
 
         #RUNnumber {
             font-size: large;
-            margin-left: 10px;
+            margin-right: 5px;
         }
         #configSelector {
             height: fit-content;
@@ -87,7 +87,7 @@ h2 {
         }
         .text {
             /* border: 1px solid orange; */
-            width: 50%;
+            width: fit-content;
             padding-left: 20px;
         }
     }
@@ -237,107 +237,29 @@ footer {
     height: 200px;
 }
 
-@media screen and (max-width: 700px){
-    h1{
-    font-size: larger;
+@media screen and (max-width: 1000px){
+    .infoBlock{
+        width: 95%;
     }
-    h2{
-    font-size: large;
-    }
-    .infoBlock {
-        margin-left: 0px;
-        width: 30%;
-        height: fit-content;
-        /* min-width: fit-content; */
-        max-height: max-content;
-        align-items: center;
-        padding: 5px;
-
-        .container {
-            justify-content: center;
-            flex-direction: column;
-        }
-        .container1 {
-            justify-content: center;
-        }
-        .tabs{
-            padding-left: 0px;
-            text-align: center;
-            font-size: large;
-            font-weight: 600;
-            margin: 0px;
-        }
-        .form {
-            text-align: center;
-            align-items: center;
-            flex-direction: column;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            .text{
-                padding-left: 0px;
-            }
-            #RUNnumber {
-                margin-left: 0px;
-            }
-            #configSelector {
-                margin-left: 0px;
-            }
-            .text {
-                width: 60%;
-                padding-left: 0px;
-            }
-        }
-        .choose {
-            margin-left: 0px;
-        }
-        .buttons {
-            flex-direction: column;
-            gap: 0;
-            .controlBtn{
-                padding: 10px;
-                font-size: large;
-                margin-top: 10px;
-            }
-        }
-        #status & #RUN {
-            font-size:large;
-            padding-left: 10px;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-    }
-    
-    .pickers {
-    padding: 5px;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    }
-
     .statusBlock{
-        float:none;
-        width: 55%;
-        margin-left: 0px;
-        min-height: fit-content;
-        padding-left: 0px;
-
+        width: 95%;
     }
-
-    .pedalBlock {
-        float:none;
+    .statusBlock{
+        border: 3px solid rgb(255, 0, 17);
         width: 100%;
-        height: auto;
-        .pedalcharts{
-            gap: 0px;
-        }
-        .pedalChart {
-            width: 33%;
-            max-width: max-content;
-        } 
-    }
+        max-width:none;
+        min-height: 400px;
+        height: fit-content;
+        display:flex;
+        flex-direction: row;
 
+        .carStatus{
+            border: 5px solid rgb(89, 236, 79);
+            float: right;
+        }
+    }
     
+
 }
 
 @media screen and (max-width: 500px){
@@ -367,7 +289,7 @@ footer {
             flex-direction: row;
 
             #RUNnumber {
-                margin-left: 10px;
+                margin-left: 2px;
             }
             #configSelector {
                 height: fit-content;

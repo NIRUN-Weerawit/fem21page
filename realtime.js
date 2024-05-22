@@ -27,7 +27,7 @@ onValue(connectedRef, (snapshot) => {
     const isConnected = snapshot.val();
     if (isConnected === true) {
         document.querySelector("#status").textContent = "CONNECTED";
-        document.getElementById("status").style.color = 'green';
+        document.getElementById("status").style.color = '#59ec4f';
         console.log("Database is connected");
         // alert("Database is connected");
     } else {
@@ -37,29 +37,17 @@ onValue(connectedRef, (snapshot) => {
     }
 });
 
-// Define a variable to hold the reference to the current listener
-let currentListener;
-
 // Function to register the onValue listener
 function registerOnValueListener(folder_name) {
 
-  console.log("new register!");
   // Register the new onValue listener
   onValue(ref(db, folder_name + "/STATUS"), (snapshot) => {
-    // if (snapshot.exists()){
-    //   console.log("STATUS changed!");
-    // }
     const data = snapshot.val();
     if (data){
-      // console.log("SNAPSHOT TOOK");
       const keys = Object.keys(data);
-      // console.log("keys: " + keys);
       keys.forEach((key) => {
-        console.log("detect key: " + key);
-        
         if (key == "HV_STATUS" || key == "BRAKE_SW"){
           const element = document.getElementById(key);
-          // console.log(key + ": " + data[key]);
           element.textContent = data[key] ? "ON" : "OFF";
         } 
       })
@@ -69,23 +57,15 @@ function registerOnValueListener(folder_name) {
   });
 
   onValue(ref(db, folder_name + "/TEMPS"), (snapshot) => {
-    if (snapshot.exists()){
-      console.log("TEMP changed!");
-    }
     const data = snapshot.val();
     if (data){
       const keys = Object.keys(data);
-      // console.log("keys: " + keys);
       keys.forEach((key) => {
-        console.log("detect key: " + key);
-        
         if (key == "BTR_TEMP" || key == "INV_TEMP"){
           const element = document.getElementById(key);
-          // console.log(key + ": " + data[key]);
           element.textContent = data[key];
         } else if (key == "MOTOR_TEMP"){
           const nums = data[key].split('/').map(Number);
-          // console.log("data = " + data[key]);
           document.getElementById("wheel_1").textContent = nums[0];
           document.getElementById("wheel_2").textContent = nums[1];
           document.getElementById("wheel_3").textContent = nums[2];
@@ -97,8 +77,6 @@ function registerOnValueListener(folder_name) {
     }
   });
 }
-
-
 
 document.getElementById("configChoose").addEventListener('click', function(){
   var e = document.getElementById("configSelector");
@@ -171,28 +149,16 @@ let stopFlag = 0;
 var data_VELOCITY = [];
 var data_LV = [];
 var data_HV = [];
-
-var data_TORQUE1 = [];
-var data_TORQUE2 = [];
-var data_TORQUE3 = [];
-var data_TORQUE4 = [];
 var data_TORQUE = [[], [], [], []];
-
 var data_ACC = [];
 var data_BRAKE = [];
 var data_BATTERY_LEVEL = [];
-var data_MOTORTEMP = [[],[],[],[]];
-var data_MOTORTEMP_LF = [];
-var data_MOTORTEMP_RF = [];
-var data_MOTORTEMP_LB = [];
-var data_MOTORTEMP_RB = [];
-var data_INVERTERTEMP = [];
+
 // var VCMINFO = "-";
 // var ERROR = "-";
 var timestamps_num = 15; //The amount of timestamps
-var time_interval = 100; //interval of data reading millisecond
+var time_interval = 10; //interval of data reading millisecond
 var MaxVelocity = 200;
-var totalGraph = 4;
 var MaxLV = 30;
 var MaxHV = 600;
 var MaxTorque = 200;
@@ -221,14 +187,81 @@ document.querySelector("#update").addEventListener('click', function(e) {
   });
 });
 
-document.getElementById("RUNchoose").addEventListener('click', function(e){
+document.getElementById("RUNchoose").addEventListener('click', async function(e){
   count = document.getElementById("RUNnumber").value;
   date = document.getElementById("date").value;
   document.getElementById("RUN").textContent = count;
   folder = "FEM21App data/" + date + "/RUN:" + count;
   console.log("choose:" + count);
+  const data = await csvmaker();
+  if (data) {
+      download(data);
+  } else {
+      console.log("No data found or error occurred while creating CSV.");
+  }
   e.preventDefault;
 })
+
+const download = function (data) { 
+
+	// Creating a Blob for having a csv file format 
+	// and passing the data with type 
+	const blob = new Blob([data], { type: 'text/csv' }); 
+
+	// Creating an object for downloading url 
+	const url = window.URL.createObjectURL(blob) 
+
+	// Creating an anchor(a) tag of HTML 
+	const a = document.createElement('a') 
+
+	// Passing the blob downloading url 
+	a.setAttribute('href', url) 
+
+	// Setting the anchor tag attribute for downloading 
+	// and passing the download file name 
+  const file_name = date + "/RUN:" + count + ".csv";
+	a.setAttribute('download', file_name); 
+
+	// Performing a download with click 
+	a.click() 
+} 
+
+const csvmaker = async function () { 
+  try {
+    const snapshot = await get(ref(db, folder));
+    if (snapshot.exists()) {
+        const Data = snapshot.val();
+        var keys = Object.keys(Data);
+        const timestamps = Object.keys(Data[keys[0]]);
+        // const values = Object.values(Data[keys[0]]);
+
+        
+        var csvRows = []
+        csvRows.push(keys.join(','));
+        //keys = ACC,BATTERY_LEVEL,BRAKE,HV,LV,STATUS,TEMPS,TORQUE,VELOCITY,TIMESTAMPS
+        var num = 0;
+        for (const timestamp of timestamps){
+          const each_row = []
+          console.log("timestamp = " + timestamp);
+          for (const head of keys){
+            // console.log("column = " + head);
+            const values = Object.values(Data[head]);
+            // console.log("values[0] = " + values[0]);
+            each_row.push(values[num]);
+          }
+          each_row.push(timestamp);
+          num++;
+          csvRows.push(each_row.join(','));
+        }
+
+        // Returning the array joining with new line 
+        return csvRows.join('\n');
+    }
+} catch (error) {
+    console.log("CSVMAKER Error!" + error);
+}
+}
+
 
 document.getElementsByClassName('picker')[0].addEventListener('change', function(){
   showGraph(this, "VELOCITY");
@@ -265,7 +298,7 @@ document.querySelector("#stop").addEventListener('click', function(){
 
 
 
-function obtainData(category){
+function obtainRealtimeData(category){
   if (stopFlag == 0){
     get(ref(db, folder + "/" + category))
     .then((snapshot) =>{
@@ -355,59 +388,14 @@ function obtainData(category){
                 points: [['value', [0, values[values.length - 1]]]] 
               })
             }
-            // } else if (category == "MOTORTEMP"){   //LEFT-FRONT
-            //   const MOTORTEMP = values[values.length - 1].split('/').map(Number);
-            //   data_MOTORTEMP[0].shift();
-            //   data_MOTORTEMP[1].shift();
-            //   data_MOTORTEMP[2].shift();
-            //   data_MOTORTEMP[3].shift();
-            //   data_MOTORTEMP.push({
-            //     name: 'MOTORTEMP_LF', 
-            //     points: [['value', [0, MOTORTEMP[0]] ]]  
-            //   }, {
-            //     name: 'MOTORTEMP_RF', 
-            //     points: [['value', [0, MOTORTEMP[1]] ]]  
-            //   }, {
-            //     name: 'MOTORTEMP_LB', 
-            //     points: [['value', [0, MOTORTEMP[2]] ]]  
-            //   }, {
-            //     name: 'MOTORTEMP_RB', 
-            //     points: [['value', [0, MOTORTEMP[3]] ]]  
-            //   })
-            // } else if (category == "MOTORTEMP_RF"){   //RIGHT-FRONT
-            //   data_MOTORTEMP_RF.shift();
-            //   data_MOTORTEMP_RF.push({
-            //     name: 'MOTORTEMP_RF', 
-            //     points: [['value', [0, values[values.length - 1]]]] 
-            //   })
-            // } else if (category == "MOTORTEMP_LB"){  //LEFT-BACK
-            //   data_MOTORTEMP_LB.shift();
-            //   data_MOTORTEMP_LB.push({
-            //     name: 'MOTORTEMP_LB', 
-            //     points: [['value', [0, values[values.length - 1]]]] 
-            //   })
-            // } else if (category == "MOTORTEMP_RB"){  //RIGHT-BACK
-            //   data_MOTORTEMP_RB.shift();
-            //   data_MOTORTEMP_RB.push({
-            //     name: 'MOTORTEMP_RB', 
-            //     points: [['value', [0, values[values.length - 1]]]] 
-            //   })
-            // } else if (category == "INVERTERTEMP"){
-            //   data_INVERTERTEMP.shift();
-            //   data_INVERTERTEMP.push({
-            //     name: 'INVERTERTEMP', 
-            //     points: [['value', [0, values[values.length - 1]]]] 
-            //   })
-            // }
-
         } else {
             stopFlag = 1;
             // alert("No data found, code error:" + stopFlag );
-            console.log("ObtainData: No data found, code error:" + stopFlag);
+            console.log("ObtainRealtimeData: No data found, code error:" + stopFlag);
             document.querySelector("#stop").textContent = "START";
         }
     }).catch((error)=>{
-        console.log("ObtainData Error!" + error);
+        console.log("ObtainRealtimeData Error!" + error);
     });
   }
     
@@ -415,9 +403,9 @@ function obtainData(category){
 
 //for pedal charts
 window.setInterval(function() {
-  obtainData("ACC");
-  obtainData("BRAKE");
-  obtainData("BATTERY_LEVEL");
+  obtainRealtimeData("ACC");
+  obtainRealtimeData("BRAKE");
+  obtainRealtimeData("BATTERY_LEVEL");
   accChart.options({series: data_ACC});
   brakeChart.options({series: data_BRAKE});
   batteryChart.options({series: data_BATTERY_LEVEL});
@@ -496,7 +484,7 @@ new Vue({
       intervals: function() {
           var me = this;
           window.setInterval(function() {
-                  obtainData("VELOCITY");
+                  obtainRealtimeData("VELOCITY");
                   me.$refs.realtimeChart.updateSeries([{ data: data_VELOCITY }]);
           }, time_interval);
       }
@@ -557,7 +545,7 @@ new Vue({
           var me = this;
           window.setInterval(function() {
               
-                  obtainData("LV");
+                  obtainRealtimeData("LV");
                   // brakeChart.redraw([{animation:false}]);
                   // brakeChart.options({ 
                   //   series: [ 
@@ -636,7 +624,7 @@ new Vue({
           var me = this;
           window.setInterval(function() {
               
-                  obtainData("HV");
+                  obtainRealtimeData("HV");
                   me.$refs.realtimeChart.updateSeries([{ data: data_HV }]);
               
           }, time_interval);
@@ -705,7 +693,7 @@ new Vue({
       intervals: function() {
           var me = this;
           window.setInterval(function() {
-                  obtainData("TORQUE");
+                  obtainRealtimeData("TORQUE");
                   me.$refs.realtimeChart.updateSeries([
                     { name: "Left-Front" , data: data_TORQUE[0] },
                     { name: "Right-Front" , data: data_TORQUE[1] },

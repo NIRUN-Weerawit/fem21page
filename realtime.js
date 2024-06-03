@@ -48,6 +48,7 @@ function registerOnValueListener(folder_name) {
       keys.forEach((key) => {
         if (key == "HV_STATUS"){
           const element = document.getElementById(key);
+          console.log("data[HV_STATUS] = " + data[key]);
           element.textContent = data[key] ? "ON" : "OFF";
         } 
       })
@@ -78,70 +79,70 @@ function registerOnValueListener(folder_name) {
   });
 }
 
-document.getElementById("configChoose").addEventListener('click', function(){
-  var e = document.getElementById("configSelector");
-  var value = e.value;
-  // var text = e.options[e.selectedIndex].text;
-  if (value == "dense"){
-    var style = {
-      width: "20%",
-      height: "400px",
-      marginLeft: "0px",
-      paddingRight: "10px"
-    }
-    $(".block").css(style);
-    $(".block1").css({
-      marginLeft: "0px",
-      padding: "0px"
-    });
-    $("#RUN-choose").css("marginLeft", "0px");
-    $(".buttons").css("gap", "1vw");
-    $(".pedalChart").css("width", "200px");
-    $(".pickers").css({
-      flexDirection: "column",
-      alignItems: "center",
-      width: "fit-content"
-    });
-    $(".linecharts").css({
-      width: "50%",
-      float: "right",
-      flexDirection: "row",
-      alignItems: "center"
-    });
-    $(".block1").css("width", "");
-    console.log("dense");
-  } else if (value == "expand") {
-    var style = {
-      width: "35%",
-      height: "400px",
-      marginLeft: "100px",
-      paddingRight: "0px"
-    }
-    $(".block").css(style);
-    $(".block1").css({
-      marginLeft: "70px",
-      padding: "30px"
-    });
-    $("#RUNnumber").css("marginLeft", "0px");
-    $(".buttons").css("gap", "1vw");
-    $(".pedalChart").css("width", "200px");
-    $(".pickers").css({
-      flexDirection: "row",
-      alignItems: "center"
-    });
-    $(".linecharts").css({
-      width: "100%",
-      float: "",
-      flexDirection: "column",
-      justifyContent: "center"
-    });
-    $(".linechart").css({
-      width: "100%"
-    });
-    console.log("expand");
-  }
+// document.getElementById("configChoose").addEventListener('click', function(){
+//   var e = document.getElementById("configSelector");
+//   var value = e.value;
+//   // var text = e.options[e.selectedIndex].text;
+//   if (value == "dense"){
+//     var style = {
+//       width: "20%",
+//       height: "400px",
+//       marginLeft: "0px",
+//       paddingRight: "10px"
+//     }
+//     $(".block").css(style);
+//     $(".block1").css({
+//       marginLeft: "0px",
+//       padding: "0px"
+//     });
+//     $("#RUN-choose").css("marginLeft", "0px");
+//     $(".buttons").css("gap", "1vw");
+//     $(".pedalChart").css("width", "200px");
+//     $(".pickers").css({
+//       flexDirection: "column",
+//       alignItems: "center",
+//       width: "fit-content"
+//     });
+//     $(".linecharts").css({
+//       width: "50%",
+//       float: "right",
+//       flexDirection: "row",
+//       alignItems: "center"
+//     });
+//     $(".block1").css("width", "");
+//     console.log("dense");
+//   } else if (value == "expand") {
+//     var style = {
+//       width: "35%",
+//       height: "400px",
+//       marginLeft: "100px",
+//       paddingRight: "0px"
+//     }
+//     $(".block").css(style);
+//     $(".block1").css({
+//       marginLeft: "70px",
+//       padding: "30px"
+//     });
+//     $("#RUNnumber").css("marginLeft", "0px");
+//     $(".buttons").css("gap", "1vw");
+//     $(".pedalChart").css("width", "200px");
+//     $(".pickers").css({
+//       flexDirection: "row",
+//       alignItems: "center"
+//     });
+//     $(".linecharts").css({
+//       width: "100%",
+//       float: "",
+//       flexDirection: "column",
+//       justifyContent: "center"
+//     });
+//     $(".linechart").css({
+//       width: "100%"
+//     });
+//     console.log("expand");
+//   }
   
-})
+// })
 
 var count = 1;
 var folder = "FEM21App data/" + date + "/RUN:" + count;
@@ -193,6 +194,10 @@ document.getElementById("RUNchoose").addEventListener('click', async function(e)
   document.getElementById("RUN").textContent = count;
   folder = "FEM21App data/" + date + "/RUN:" + count;
   console.log("choose:" + count);
+  e.preventDefault;
+})
+
+document.getElementById("Download").addEventListener('click', async function(e){
   const data = await csvmaker();
   if (data) {
       download(data);

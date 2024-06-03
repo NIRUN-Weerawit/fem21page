@@ -42,6 +42,36 @@ h1 {
 h2 {
     text-align: center;
 }
+
+.floating-buttons {
+    background: none;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    gap: 10%;
+    position: fixed;
+    right: 1%;
+    top: 1%;
+    z-index: 1000;
+    
+    .controlBtn{
+        padding: 15px;
+        font-size: larger;
+        font-weight: 800;
+        background-color: var(--accent);
+        color: #EBE9FC;
+        border: 0cm;
+        border-radius: 10px;
+    }
+    .controlBtn:hover{
+        padding: 20px;
+
+        transition-duration: 100ms;
+    }
+    /* margin-bottom: 2vw; */
+    
+}
+
 .infoBlock {
     
     /* border: 4px solid grey; */

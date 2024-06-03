@@ -46,7 +46,7 @@ function registerOnValueListener(folder_name) {
     if (data){
       const keys = Object.keys(data);
       keys.forEach((key) => {
-        if (key == "HV_STATUS" || key == "BRAKE_SW"){
+        if (key == "HV_STATUS"){
           const element = document.getElementById(key);
           element.textContent = data[key] ? "ON" : "OFF";
         } 

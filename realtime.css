@@ -198,7 +198,7 @@ h2 {
             width: 100%;
             text-align: center;
         }
-        #BRAKE_SW, #HV_STATUS, #ERROR , #VCMINFO {
+        #HV_STATUS, #ERROR , #VCMINFO {
             font-weight: 700;
         }
     }
@@ -276,7 +276,7 @@ footer {
         width: 95%;
     }
     .statusBlock{
-        border: 3px solid rgb(255, 0, 17);
+        /* border: 3px solid rgb(255, 0, 17); */
         width: 100%;
         max-width:none;
         min-height: 400px;

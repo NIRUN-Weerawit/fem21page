@@ -40,6 +40,11 @@
 
     <h1>REALTIME DATA VISUALIZER</h1>
 
+    <div class="floating-buttons">
+      <button class="controlBtn" id="stop">STOP</button>
+      <button class="controlBtn" id="update">UPDATE</button>
+    </div>
+
     <div class="infoBlock">
       <div class="container">
         <span class="tabs" id="status-tab">STATUS: </span>
@@ -59,9 +64,10 @@
 
       <div class="container1">
         <button class="choose" id="RUNchoose">CHOOSE</button>
+        <button class="choose" id="Download">DOWNLOAD</button>
       </div>
 
-      <form class="form">
+      <!-- <form class="form">
         <div class="text" >Change the configuration:</div>
         <select name="configuration" id="configSelector">
           <option value="dense">dense</option>
@@ -71,12 +77,12 @@
 
       <div class="container1">
         <button class="choose" id="configChoose">CHOOSE</button>
-      </div>
+      </div> -->
     
-      <div class="buttons">
+      <!-- <div class="buttons">
         <button class="controlBtn" id="stop">STOP</button>
         <button class="controlBtn" id="update">UPDATE</button>
-      </div>
+      </div> -->
     </div>
 
     <div class="statusBlock">
@@ -103,13 +109,13 @@
           <div class="message">
             <span>ERROR:</span>
             <br>
-            <span id="ERROR"> - </span>
+            <span id="ERROR">-</span>
 
             </div>
           <div class="message">
             <span>VCM INFO:</span>
             <br>
-            <span id="VCMINFO"> - </span>
+            <span id="VCMINFO">-</span>
 
           </div>
         </div>

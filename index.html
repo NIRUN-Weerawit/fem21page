@@ -123,14 +123,29 @@
       </div> 
     </div>
 
+    <div class="numberBlock">
+      <div class="numberBox">
+        <div>LV_VOLTAGE</div>
+        <div id="LV">00.00</div>
+      </div>
+      <div class="numberBox">
+        <div>HV_MAX_TEMP234</div>
+        <div id="HV_TEMP">00.00</div>
+      </div>
+      <div class="numberBox">
+        <div>Data 3</div>
+        <div id="number3">00.00</div>
+      </div>
+    </div>
+
     <div class="pedalBlock">
       <h2 style="text-align: center;">PEDAL CHARTS</h2>
       <div class="pedalcharts">
         <!-- <p id="monitor" style="text-align: center; font-size: 30px; margin: 5px;">Value</p> -->
         <!-- <div id='guageChart'></div> -->
         <div class="pedalChart" id="batteryChart"></div>
-        <div class="pedalChart" id="accChart"></div>
-        <div class="pedalChart" id="brakeChart"></div>
+        <!-- <div class="pedalChart" id="accChart"></div> -->
+        <!-- <div class="pedalChart" id="brakeChart"></div> -->
       </div>
     </div>
 
@@ -138,13 +153,18 @@
       <h2>LINE CHARTS</h2>
 
       <form action class="pickers">
-        <input class="picker" type="checkbox" name="category" checked>Velocity
+        <input class="picker" type="checkbox" name="category" checked>PWT
+        <!-- <input class="picker" type="checkbox" name="category" checked>Velocity
         <input class="picker" type="checkbox" name="category" checked>LV
         <input class="picker" type="checkbox" name="category" checked>HV
-        <input class="picker" type="checkbox" name="category" checked>Torque
+        <input class="picker" type="checkbox" name="category" checked>Torque -->
       </form>
 
-      <div class="linechart" id="VELOCITY"> 
+      <div class="linechart" id="PWT"> 
+        <apexchart ref="realtimeChart" type=line height=400
+          :options="chartOptions" :series="series"/>
+      </div>
+      <!-- <div class="linechart" id="VELOCITY"> 
         <apexchart ref="realtimeChart" type=line height=400
           :options="chartOptions" :series="series" id="inv" />
       </div>
@@ -159,7 +179,7 @@
       <div class="linechart" id="TORQUE">
         <apexchart ref="realtimeChart" type=line height=400 
           :options="chartOptions" :series="series" />
-      </div>
+      </div> -->
     </div>
 
     <!-- <footer>

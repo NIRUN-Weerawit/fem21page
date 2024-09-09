@@ -65,7 +65,7 @@ function registerOnValueListener(folder_name) {
         if (key == "BTR_TEMP" || key == "INV_TEMP"){
           const element = document.getElementById(key);
           element.textContent = data[key];
-        } else if (key == "MOTOR_TEMP"){
+        } else if (key == "MOTOR_TEMP" ){
           const nums = data[key].split('/').map(Number);
           document.getElementById("wheel_1").textContent = nums[0];
           document.getElementById("wheel_2").textContent = nums[1];
@@ -77,6 +77,48 @@ function registerOnValueListener(folder_name) {
       console.log("No data available at " + folder_name + "/TEMPS");
     }
   });
+
+  //To track LV which is BT_LV_VOLTAGE
+  onValue(ref(db, folder_name + "/LV"), (snapshot) => {
+    const data = snapshot.val();
+    if (data){
+      const keys = Object.keys(data);
+      keys.forEach((key) => {
+        if (key == "LV"){
+          const element = document.getElementById("LV");
+          element.textContent = data[key];
+        } 
+      })
+    } else {
+      console.log("No data available at " + folder_name + "/HV");
+    }
+  });
+
+  //To track HV/TEMP which is hv_maxtemp234
+  onValue(ref(db, folder_name + "/HV"), (snapshot) => {
+    const data = snapshot.val();
+    if (data){
+      const keys = Object.keys(data);
+      keys.forEach((key) => {
+        if (key == "TEMP"){
+          const element = document.getElementById("HV_TEMP");
+          element.textContent = data[key];
+        } else if (key == "BTR"){
+          data_BATTERY_LEVEL.shift();
+          data_BATTERY_LEVEL.push({
+            name: 'Battery', 
+            points: [['value', [0, data[key]]]] 
+          })
+        }
+      })
+    } else {
+      console.log("No data available at " + folder_name + "/HV");
+    }
+  });
+
+  
+
+  
 }
 
 // document.getElementById("configChoose").addEventListener('click', function(){
@@ -154,6 +196,7 @@ var data_TORQUE = [[], [], [], []];
 var data_ACC = [];
 var data_BRAKE = [];
 var data_BATTERY_LEVEL = [];
+var data_PWT = [];
 
 // var VCMINFO = "-";
 // var ERROR = "-";
@@ -163,6 +206,7 @@ var MaxVelocity = 200;
 var MaxLV = 30;
 var MaxHV = 600;
 var MaxTorque = 200;
+var MaxPWT = 1000;
 
 // Initial registration of onValue listener
 registerOnValueListener(folder);
@@ -267,19 +311,21 @@ const csvmaker = async function () {
 }
 }
 
-
 document.getElementsByClassName('picker')[0].addEventListener('change', function(){
-  showGraph(this, "VELOCITY");
+  showGraph(this, "PWT");
 })
-document.getElementsByClassName('picker')[1].addEventListener('change', function(){
-  showGraph(this, "LV");
-})
-document.getElementsByClassName('picker')[2].addEventListener('change', function(){
-  showGraph(this, "HV");
-})
-document.getElementsByClassName('picker')[3].addEventListener('change', function(){
-  showGraph(this, "TORQUE");
-})
+// document.getElementsByClassName('picker')[0].addEventListener('change', function(){
+//   showGraph(this, "VELOCITY");
+// })
+// document.getElementsByClassName('picker')[1].addEventListener('change', function(){
+//   showGraph(this, "LV");
+// })
+// document.getElementsByClassName('picker')[2].addEventListener('change', function(){
+//   showGraph(this, "HV");
+// })
+// document.getElementsByClassName('picker')[3].addEventListener('change', function(){
+//   showGraph(this, "TORQUE");
+// })
 
 function showGraph(element, category){
   if (element.checked){
@@ -325,6 +371,7 @@ function obtainRealtimeData(category){
               }
 
             } else if (category == "LV") {
+              //LV_VOLTAGE
               data_LV.push({
                 x: formattedDate,
                 y: values[values.length - 1]
@@ -386,14 +433,25 @@ function obtainRealtimeData(category){
                 points: [['value', [0, values[values.length - 1]]]] 
               })
 
-            } else if (category == "BATTERY_LEVEL"){
+            } else if (category == "BTR"){
+              // console.log("Obtain:" + data_BATTERY_LEVEL);
               data_BATTERY_LEVEL.shift();
               data_BATTERY_LEVEL.push({
                 name: 'Battery', 
                 points: [['value', [0, values[values.length - 1]]]] 
               })
-            }
-        } else {
+            } else if (category == "PWT"){
+              // console.log("optained: " + values[values.length - 1])
+              data_PWT.push({
+                x: formattedDate,
+                y: values[values.length - 1]
+              })
+              if (data_PWT.length > timestamps_num){
+                data_PWT.shift();
+              }
+
+            } 
+          } else {
             stopFlag = 1;
             // alert("No data found, code error:" + stopFlag );
             console.log("ObtainRealtimeData: No data found, code error:" + stopFlag);
@@ -408,11 +466,12 @@ function obtainRealtimeData(category){
 
 //for pedal charts
 window.setInterval(function() {
-  obtainRealtimeData("ACC");
-  obtainRealtimeData("BRAKE");
-  obtainRealtimeData("BATTERY_LEVEL");
-  accChart.options({series: data_ACC});
-  brakeChart.options({series: data_BRAKE});
+  // obtainRealtimeData("ACC");
+  // obtainRealtimeData("BRAKE");
+  // obtainRealtimeData("BATTERY_LEVEL");
+  obtainRealtimeData("HV/BTR");
+  // accChart.options({series: data_ACC});
+  // brakeChart.options({series: data_BRAKE});
   batteryChart.options({series: data_BATTERY_LEVEL});
 }, time_interval);
 
@@ -435,14 +494,13 @@ function getData(category) {
           throw error; // rethrowing the error for further handling
       });
 }
-
 new Vue({
-  el: "#VELOCITY",
+  el: "#PWT",
   components: {
       apexchart: VueApexCharts
   },
   data: {
-      series: [{data: data_VELOCITY.slice()}],
+      series: [{data: data_PWT.slice()}],
       chartOptions: {
       chart: {
           animations: {
@@ -467,14 +525,14 @@ new Vue({
       // },
 
       title: {
-          text: "Dynamic Updating Chart: VELOCITY",
+          text: "Dynamic Updating Chart: Power Consumption",
           align: "left"
       },
       markers: {
           size:0
       },
       yaxis: {
-          max: MaxVelocity,
+          max: MaxPWT,
           min: 0
       },
       legend: {
@@ -489,12 +547,72 @@ new Vue({
       intervals: function() {
           var me = this;
           window.setInterval(function() {
-                  obtainRealtimeData("VELOCITY");
-                  me.$refs.realtimeChart.updateSeries([{ data: data_VELOCITY }]);
+            obtainRealtimeData("PWT");
+            me.$refs.realtimeChart.updateSeries([{ data: data_PWT }]);
           }, time_interval);
       }
   }
 });
+
+// new Vue({
+//   el: "#VELOCITY",
+//   components: {
+//       apexchart: VueApexCharts
+//   },
+//   data: {
+//       series: [{data: data_VELOCITY.slice()}],
+//       chartOptions: {
+//       chart: {
+//           animations: {
+//           enabled: false,
+//           easing: "linear",
+//           dynamicAnimation: {
+//               speed: 500
+//           }
+//           },
+//           toolbar: {
+//           show: false
+//           },
+//           zoom: {
+//           enabled: false
+//           },
+//       },
+//       dataLabels: {
+//           enabled: false
+//       },
+//       // stroke: {
+//       //     curve: "smooth"
+//       // },
+
+//       title: {
+//           text: "Dynamic Updating Chart: VELOCITY",
+//           align: "left"
+//       },
+//       markers: {
+//           size:0
+//       },
+//       yaxis: {
+//           max: MaxVelocity,
+//           min: 0
+//       },
+//       legend: {
+//           show: false
+//       }
+//       }
+//   },
+//   mounted: function() {
+//       this.intervals();
+//   },
+//   methods: {
+//       intervals: function() {
+//           var me = this;
+//           window.setInterval(function() {
+//                   obtainRealtimeData("VELOCITY");
+//                   me.$refs.realtimeChart.updateSeries([{ data: data_VELOCITY }]);
+//           }, time_interval);
+//       }
+//   }
+// });
 
 new Vue({
   el: "#LV",
@@ -575,140 +693,140 @@ new Vue({
     }
 });
 
-new Vue({
-  el: "#HV",
-  components: {
-      apexchart: VueApexCharts
-  },
-  data: {
-      series: [{data: data_HV.slice()}],
-      chartOptions: {
-      chart: {
-          animations: {
-          enabled: false,
-          easing: "linear",
-          dynamicAnimation: {
-              speed: 500
-          }
-          },
-          toolbar: {
-          show: false
-          },
-          zoom: {
-          enabled: false
-          },
-      },
-      dataLabels: {
-          enabled: false
-      },
-      // stroke: {
-      //     curve: "smooth"
-      // },
+// new Vue({
+//   el: "#HV",
+//   components: {
+//       apexchart: VueApexCharts
+//   },
+//   data: {
+//       series: [{data: data_HV.slice()}],
+//       chartOptions: {
+//       chart: {
+//           animations: {
+//           enabled: false,
+//           easing: "linear",
+//           dynamicAnimation: {
+//               speed: 500
+//           }
+//           },
+//           toolbar: {
+//           show: false
+//           },
+//           zoom: {
+//           enabled: false
+//           },
+//       },
+//       dataLabels: {
+//           enabled: false
+//       },
+//       // stroke: {
+//       //     curve: "smooth"
+//       // },
 
-      title: {
-          text: "Dynamic Updating Chart: HV",
-          align: "left"
-      },
-      markers: {
-          size:0
-      },
-      yaxis: {
-          max: MaxHV,
-          min: 0
-      },
-      legend: {
-          show: false
-      }
-      }
-  },
-  mounted: function() {
-      this.intervals();
-  },
-  methods: {
-      intervals: function() {
-          var me = this;
-          window.setInterval(function() {
+//       title: {
+//           text: "Dynamic Updating Chart: HV",
+//           align: "left"
+//       },
+//       markers: {
+//           size:0
+//       },
+//       yaxis: {
+//           max: MaxHV,
+//           min: 0
+//       },
+//       legend: {
+//           show: false
+//       }
+//       }
+//   },
+//   mounted: function() {
+//       this.intervals();
+//   },
+//   methods: {
+//       intervals: function() {
+//           var me = this;
+//           window.setInterval(function() {
               
-                  obtainRealtimeData("HV");
-                  me.$refs.realtimeChart.updateSeries([{ data: data_HV }]);
+//                   obtainRealtimeData("HV");
+//                   me.$refs.realtimeChart.updateSeries([{ data: data_HV }]);
               
-          }, time_interval);
-      }
-  }
-});
+//           }, time_interval);
+//       }
+//   }
+// });
 
-new Vue({
-  el: "#TORQUE",
-  components: {
-      apexchart: VueApexCharts
-  },
-  data: {
-    series: [],
-    // series: [{data: data_TORQUE.slice()}],
-    chartOptions: {
-      chart: {
-          animations: {
-          enabled: false,
-          easing: "linear",
-          dynamicAnimation: {
-              speed: 500
-          }
-          },
-          toolbar: {
-          show: true
-          },
-          zoom: {
-          enabled: false
-          },
-      },
-      dataLabels: {
-          enabled: false
-      },
-      // stroke: {
-      //     curve: "smooth"
-      // },
+// new Vue({
+//   el: "#TORQUE",
+//   components: {
+//       apexchart: VueApexCharts
+//   },
+//   data: {
+//     series: [],
+//     // series: [{data: data_TORQUE.slice()}],
+//     chartOptions: {
+//       chart: {
+//           animations: {
+//           enabled: false,
+//           easing: "linear",
+//           dynamicAnimation: {
+//               speed: 500
+//           }
+//           },
+//           toolbar: {
+//           show: true
+//           },
+//           zoom: {
+//           enabled: false
+//           },
+//       },
+//       dataLabels: {
+//           enabled: false
+//       },
+//       // stroke: {
+//       //     curve: "smooth"
+//       // },
 
-      title: {
-          text: "Dynamic Updating Chart: TORQUE",
-          align: "left"
-      },
-      markers: {
-          size:0
-      },
-      yaxis: {
-          max: MaxTorque,
-          min: 0
-      },
-      legend: {
-          show: true,
-          labels: {
-            // colors: ['#ff0000', '#00ff00', '#0000ff', '#111111'], // Define colors for each series
-            useSeriesColors: true, // Ensure custom colors are used for legend labels
-            formatter: function(seriesName, opts) {
-              return "<span style='color: " + opts.colors[opts.seriesIndex] + "'>" + seriesName + "</span>";
-            }
-          }
-      }
-    }
-  },
-  mounted: function() {
-      this.intervals();
-  },
-  methods: {
-      intervals: function() {
-          var me = this;
-          window.setInterval(function() {
-                  obtainRealtimeData("TORQUE");
-                  me.$refs.realtimeChart.updateSeries([
-                    { name: "Left-Front" , data: data_TORQUE[0] },
-                    { name: "Right-Front" , data: data_TORQUE[1] },
-                    { name: "Left-Back" , data: data_TORQUE[2] },
-                    { name: "Right-Back" , data: data_TORQUE[3] }
-                  ]);
-          }, time_interval);
-      }
-  }
-});
+//       title: {
+//           text: "Dynamic Updating Chart: TORQUE",
+//           align: "left"
+//       },
+//       markers: {
+//           size:0
+//       },
+//       yaxis: {
+//           max: MaxTorque,
+//           min: 0
+//       },
+//       legend: {
+//           show: true,
+//           labels: {
+//             // colors: ['#ff0000', '#00ff00', '#0000ff', '#111111'], // Define colors for each series
+//             useSeriesColors: true, // Ensure custom colors are used for legend labels
+//             formatter: function(seriesName, opts) {
+//               return "<span style='color: " + opts.colors[opts.seriesIndex] + "'>" + seriesName + "</span>";
+//             }
+//           }
+//       }
+//     }
+//   },
+//   mounted: function() {
+//       this.intervals();
+//   },
+//   methods: {
+//       intervals: function() {
+//           var me = this;
+//           window.setInterval(function() {
+//                   obtainRealtimeData("TORQUE");
+//                   me.$refs.realtimeChart.updateSeries([
+//                     { name: "Left-Front" , data: data_TORQUE[0] },
+//                     { name: "Right-Front" , data: data_TORQUE[1] },
+//                     { name: "Left-Back" , data: data_TORQUE[2] },
+//                     { name: "Right-Back" , data: data_TORQUE[3] }
+//                   ]);
+//           }, time_interval);
+//       }
+//   }
+// });
 
 
 ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
@@ -975,7 +1093,7 @@ var accOption = {
   }
 };
 
-var accChart = new JSC.chart('accChart', accOption);
+// var accChart = new JSC.chart('accChart', accOption);
 
 var brakeOption = accOption;
 brakeOption['palette'] = {
@@ -989,7 +1107,7 @@ brakeOption['palette'] = {
     ] 
 };
 
-var brakeChart = new JSC.chart('brakeChart', brakeOption);
+// var brakeChart = new JSC.chart('brakeChart', brakeOption);
 
 var batteryOption = brakeOption;
 batteryOption['palette'] = {

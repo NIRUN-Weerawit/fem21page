@@ -62,17 +62,22 @@ function registerOnValueListener(folder_name) {
     if (data){
       const keys = Object.keys(data);
       keys.forEach((key) => {
-        if (key == "BTR_TEMP" || key == "INV_TEMP"){
+        if (key == "BTR_TEMP"){
           const element = document.getElementById(key);
           element.textContent = data[key];
         } else if (key == "MOTOR_TEMP" ){
           const nums = data[key].split('/').map(Number);
-          document.getElementById("wheel_1").textContent = nums[0];
-          document.getElementById("wheel_2").textContent = nums[1];
-          document.getElementById("wheel_3").textContent = nums[2];
-          document.getElementById("wheel_4").textContent = nums[3];
-        }
-      })
+          document.getElementById("MOTOR_TEMP_1").textContent = nums[0];
+          document.getElementById("MOTOR_TEMP_2").textContent = nums[1];
+          document.getElementById("MOTOR_TEMP_4").textContent = nums[2];
+          document.getElementById("MOTOR_TEMP_3").textContent = nums[3];
+        } else if (key == "INV_TEMP" ){
+          const nums = data[key].split('/').map(Number);
+          document.getElementById("INV_TEMP_1").textContent = nums[0];
+          document.getElementById("INV_TEMP_2").textContent = nums[1];
+          document.getElementById("INV_TEMP_4").textContent = nums[2];
+          document.getElementById("INV_TEMP_3").textContent = nums[3];
+      }})
     } else {
       console.log("No data available at " + folder_name + "/TEMPS");
     }
@@ -206,7 +211,7 @@ var MaxVelocity = 200;
 var MaxLV = 30;
 var MaxHV = 600;
 var MaxTorque = 200;
-var MaxPWT = 1000;
+var MaxPWT = 80000;
 
 // Initial registration of onValue listener
 registerOnValueListener(folder);

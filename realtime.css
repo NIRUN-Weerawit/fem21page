@@ -266,7 +266,8 @@ h2 {
     .numberBox{
         height: inherit;
         width: max-content;
-        border: 1px solid black;
+        padding: 10px;
+        border: 3px solid black;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -288,7 +289,7 @@ h2 {
     .pedalcharts{
         display: flex;
         flex-direction: row;
-        border: 3px dashed red;
+        /* border: 3px dashed red; */
         height: 300px;
         justify-content: center;
         width: fit-content;

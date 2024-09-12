@@ -211,7 +211,7 @@ var MaxVelocity = 200;
 var MaxLV = 30;
 var MaxHV = 600;
 var MaxTorque = 200;
-var MaxPWT = 80000;
+var MaxPWT = 100;
 
 // Initial registration of onValue listener
 registerOnValueListener(folder);

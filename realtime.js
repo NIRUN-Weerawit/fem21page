@@ -242,8 +242,9 @@ document.getElementById("RUNchoose").addEventListener('click', async function(e)
   date = document.getElementById("date").value;
   document.getElementById("RUN").textContent = count;
   folder = "FEM21App data/" + date + "/RUN:" + count;
+  e.defaultPrevented;
+  registerOnValueListener(folder);
   console.log("choose:" + count);
-  e.preventDefault;
 })
 
 document.getElementById("Download").addEventListener('click', async function(e){

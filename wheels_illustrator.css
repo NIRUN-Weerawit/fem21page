@@ -36,7 +36,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 50px;
+	/* font-size: 50px; */
 	font-weight: 700;
 }
 .wheel_2
@@ -59,7 +59,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 50px;
+	/* font-size: 50px; */
 	font-weight: 700;
 }
 .wheel_3
@@ -83,7 +83,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 50px;
+	/* font-size: 50px; */
 	font-weight: 700;
 }
 .wheel_4
@@ -107,7 +107,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 50px;
+	/* font-size: 50px; */
 	font-weight: 700;
 
 }
@@ -165,7 +165,7 @@
 	/* left : 482px; */
 	left: 50%;
 	transform: translateX(-50%);
-	top : 100px;
+	top : 130px;
 	width : 92px;
 	height : fit-content;
 }
@@ -181,7 +181,7 @@
 	/* left : 481px; */
 	left: 50%;
 	transform: translateX(-50%);
-	top : 122px;
+	top : 160px;
 	width : 92px;
 	height : 62px;
 	display: flex;

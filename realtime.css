@@ -295,12 +295,13 @@ h2 {
         width: fit-content;
         max-width: max-content;
         gap: 20px;
+        .pedalChart {
+            border: 1px solid black;
+            width: max-content;
+            max-width: max-content;
+        } 
     }
-    .pedalChart {
-        border: 1px solid black;
-        width: max-content;
-        max-width: max-content;
-    } 
+
 }
 
 .linecharts {

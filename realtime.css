@@ -298,8 +298,8 @@ h2 {
     }
     .pedalChart {
         border: 1px solid black;
-        width: 30%;
-        max-width: 33%;
+        width: max-content;
+        max-width: max-content;
     } 
 }
 
@@ -422,7 +422,19 @@ footer {
             height: fit-content;
         }
     }
-
+    .numberBlock {
+        width: 100%;
+        height: 100px;
+        font-size:larger;
+        font-weight: 700;
+        gap: 0px;
+        .numberBox{
+            height: inherit;
+            width: 50%;
+            padding: 2px;
+            border: 3px solid red;
+        }
+    }
     .pedalBlock{
         float: none;
         height: max-content;
